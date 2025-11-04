@@ -32,7 +32,6 @@ public class ClientManager {
 
     }
 
-
     public void basicAnswer(Socket socket, String message) {
         if(socket == null || socket.isClosed()) return;
 

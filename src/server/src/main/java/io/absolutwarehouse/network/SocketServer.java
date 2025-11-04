@@ -78,9 +78,16 @@ public class SocketServer implements Runnable {
             while ((msg = in.readLine()) != null) {
                 if (listener != null) listener.onReceived(client, msg);
             }
+        } catch (java.net.SocketException e) {
+            if ("Connection reset".equals(e.getMessage())) {
+                System.out.println("Client " + client.getInetAddress() + " has closed brutally the connection !");
+            } else {
+                if (listener != null) listener.onError(e);
+            }
         } catch (IOException e) {
             if (listener != null) listener.onError(e);
         } finally {
+            // Toujours notifier le listener et fermer le socket
             if (listener != null) listener.onClientDisconnected(client);
             try {
                 client.close();
