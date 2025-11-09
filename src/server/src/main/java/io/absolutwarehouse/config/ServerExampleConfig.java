@@ -11,6 +11,7 @@ public final class ServerExampleConfig {
 
     public static String DB_HOSTNAME = "postgre-...";
     public static String DB_NAME = "absolutwarehouse";
+    public static String DB_USERNAME = "myUsername";
     public static String DB_PASSWORD = "myPassword";
     public static int DB_PORT = 5432;
 
