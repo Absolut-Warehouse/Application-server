@@ -20,11 +20,13 @@ public class MyListener implements ClientListener {
     @Override
     public void onClientDisconnected(Socket clientSocket) {
         System.out.println("Client disconnected : " + clientSocket.getInetAddress());
+        ClientManager.getInstance().resetEtape();
     }
 
     @Override
     public void onError(Exception e) {
         System.err.println("Error : " + e.getMessage());
+        ClientManager.getInstance().resetEtape();
         e.printStackTrace();
     }
 }

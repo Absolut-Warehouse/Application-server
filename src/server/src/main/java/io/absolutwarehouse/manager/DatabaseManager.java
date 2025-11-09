@@ -27,7 +27,7 @@ public class DatabaseManager {
 
             connection = DriverManager.getConnection(
                     url,
-                    ServerConfig.DB_USERNAME,
+                    ServerConfig.DB_NAME,
                     ServerConfig.DB_PASSWORD
             );
 
