@@ -27,39 +27,68 @@ public class ClientManager {
         if(message == null) return;
         if(socket.isClosed()) return;
 
-        if(message.startsWith("Bonjour") ){
-            ClientManager.getInstance().basicAnswer(socket, "Bonjour client !");
+        if (message.startsWith("DISCONNECT")) {
+            System.out.println("Client " + socket.getInetAddress() + " demande une deconnexion.");
+            ClientManager.getInstance().resetEtape();
+            return;
         }
 
-        if(message.startsWith("Test") ){
-            ClientManager.getInstance().basicAnswer(socket, "micro 1,2,3 !");
-        }
         List<String> parsedMessage = parseMessage(message);
         System.out.println(parsedMessage.get(0));
         switch (Etape) {
             case "Connexion":
+                System.out.println("Traitement connexion");
                 initMessageAction(parsedMessage,socket);
                 break;
             case "Lire Package":
-                readPackageAction(parsedMessage,socket);
+                System.out.println("Traitement lecture package");
+                searchPackageAction(parsedMessage,socket);
                 break;
             case "Inserer Package":
+                System.out.println("Traitement insertion package");
+                addPackageAction(parsedMessage,socket);
                 break;
             case "Modifier Package":
+                System.out.println("Traitement modifier package");
+                modifyPackageAction(parsedMessage,socket);
+                break;
+            case "Supprimer Package":
+                System.out.println("Traitement Supprimer package");
+                deletePackageAction(parsedMessage,socket);
                 break;
             default:
                 System.out.println(Etape);
                 break;
         }
 
-
-
     }
 
-    private static void readPackageAction(List<String> parsedMessage, Socket socket) {
-        String package_code=parsedMessage.get(0);
-        //requête database
-        ClientManager.getInstance().basicAnswer(socket, "String de la requête DB formatter correctement");
+    private static void modifyPackageAction(List<String> parsedMessage, Socket socket) {
+        printList(parsedMessage);
+        ClientManager.getInstance().basicAnswer(socket, "ALLOWED");
+    }
+
+
+    private static void addPackageAction(List<String> parsedMessage, Socket socket) {
+        printList(parsedMessage);
+        ClientManager.getInstance().basicAnswer(socket, "ALLOWED");
+    }
+
+
+    private static void deletePackageAction(List<String> parsedMessage, Socket socket) {
+        printList(parsedMessage);
+        ClientManager.getInstance().basicAnswer(socket, "CONFIRMED");
+    }
+
+    private static void searchPackageAction(List<String> parsedMessage, Socket socket) {
+        printList(parsedMessage);
+        ClientManager.getInstance().basicAnswer(socket, "MY GIVEN DATA TO SEARCH");
+    }
+
+    private static void printList(List<String> parsedMessage) {
+        for (String s : parsedMessage) {
+            System.out.println(s);
+        }
     }
 
     private static boolean initMessageAction(List<String> parsedMessage,Socket socket) {
@@ -71,17 +100,21 @@ public class ClientManager {
             
         }
         switch (action) {
-            case "Inserer":
+            case "ADD":
                 ClientManager.getInstance().basicAnswer(socket, "ALLOWED");
                 Etape="Ajouter Package";
                 break;
-            case "Modifier":
+            case "MODIFY":
                 ClientManager.getInstance().basicAnswer(socket, "ALLOWED");
                 Etape="Modifier Package";
                 break;
-            case "Lire":
+            case "SEARCH":
                 ClientManager.getInstance().basicAnswer(socket, "ALLOWED");
                 Etape="Lire Package";
+                break;
+            case "DELETE":
+                ClientManager.getInstance().basicAnswer(socket, "ALLOWED");
+                Etape="Supprimer Package";
                 break;
             default:
                 ClientManager.getInstance().basicAnswer(socket, "Action non reconnue");
@@ -126,11 +159,11 @@ public class ClientManager {
 
     private static boolean checkPerms(String terminalID,String action) {
         try {
-            String perm ="RW";//DatabaseManager.requestTerminalPermission(terminalID);
-            if (action.equals("Inserer") || action.equals("Modifier") || action.equals("Supprimer")){
+            String perm ="RW"; //DatabaseManager.requestTerminalPermission(terminalID);
+            if (action.equals("ADD") || action.equals("MODIFY") || action.equals("DELETE")){
                 return (perm.equals("RW"));
             }
-            else if(action.equals("Lire")){
+            else if(action.equals("SEARCH")){
                 return (perm.equals("RW")||perm.equals("R"));
             }
             else{
